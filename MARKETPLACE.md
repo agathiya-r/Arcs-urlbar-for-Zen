@@ -32,7 +32,7 @@
   "author": "Kostiantyn Kugot",
   "version": "1.7.29",
   "ai": "partial",
-  "updatedAt": "2026-10-24",
+  "updatedAt": "2026-10-24T22:45:58Z",
   "style": {
     "chrome": "style.css",
     "content": ""
