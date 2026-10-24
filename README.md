@@ -83,7 +83,7 @@ URL bar glow adds a soft gradient across the whole field, a moving bright tip an
 
 ## Feedback
 
-[Report a problem](https://github.com/igeag/blended-addressbar/issues) with your Zen version, operating system, toolbar layout, and a screenshot. Include the page URL when the issue involves page colors.
+[Report a problem](https://github.com/kkugot/blended-addressbar/issues) with your Zen version, operating system, toolbar layout, and a screenshot. Include the page URL when the issue involves page colors.
 
 ## License
 
