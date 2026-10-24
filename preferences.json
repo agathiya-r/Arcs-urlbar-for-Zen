@@ -82,14 +82,14 @@
     "defaultValue": false
   },
   {
-    "property": "uc.blended-addressbar.addressbar-height",
-    "label": "Addressbar height",
+    "property": "uc.blended-addressbar.toolbar-height",
+    "label": "Top toolbar height",
     "type": "dropdown",
-    "defaultValue": "default",
+    "defaultValue": "compact",
     "options": [
       { "label": "Original", "value": "default" },
-      { "label": "Compact (30px)", "value": "compact" },
-      { "label": "Extra compact (26px)", "value": "extra-compact" }
+      { "label": "Compact (36px)", "value": "compact" },
+      { "label": "Extra compact (32px)", "value": "extra-compact" }
     ]
   },
   {

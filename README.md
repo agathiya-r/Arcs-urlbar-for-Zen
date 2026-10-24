@@ -41,7 +41,7 @@ Change these settings in Sine. The preference names below also identify them in 
 
 - `uc.blended-addressbar.domain-only`: show only the hostname (for example, `github.com`) while the addressbar is idle; disabled by default. Focusing the field reveals Zen's normal full URL for editing. Split-pane address labels also hide their path.
 - `uc.blended-addressbar.center-text`: center the idle address label in the browser window where the field has room; disabled by default. Each split-pane address label centers within its own field.
-- `uc.blended-addressbar.addressbar-height`: choose Original, Compact (30px), or Extra compact (26px). Original is the default.
+- `uc.blended-addressbar.toolbar-height`: choose Original, Compact (36px), or Extra compact (32px) for the whole top navigation toolbar, including its buttons. Compact is the default. This replaces the earlier addressbar-field height setting.
 
 The domain-only setting applies to HTTP and HTTPS pages. Other page types keep Zen's native label. The display settings leave the underlying URL, copy actions, and address editing unchanged.
 

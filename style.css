@@ -1181,37 +1181,15 @@ menupopup[placespopup="true"] :is(menu, menuitem, .bookmark-item):is([disabled],
     visibility: hidden !important;
 }
 
-@media (-moz-pref("uc.blended-addressbar.addressbar-height", "compact")) {
-    :root {
-        --blended-addressbar-preferred-height: 30px;
+@media (-moz-pref("uc.blended-addressbar.toolbar-height", "compact")) {
+    #nav-bar {
+        --zen-toolbar-height: 36px;
     }
 }
 
-@media (-moz-pref("uc.blended-addressbar.addressbar-height", "extra-compact")) {
-    :root {
-        --blended-addressbar-preferred-height: 26px;
-    }
-}
-
-@media (-moz-pref("uc.blended-addressbar.addressbar-height", "compact")),
-       (-moz-pref("uc.blended-addressbar.addressbar-height", "extra-compact")) {
-    :root:not([data-blended-split-editor]) #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) {
-        --urlbar-container-height: var(--blended-addressbar-preferred-height);
-    }
-
-    :root:not([data-blended-split-editor]) #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) > .urlbar-input-container {
-        height: var(--blended-addressbar-preferred-height) !important;
-        min-height: var(--blended-addressbar-preferred-height) !important;
-    }
-
-    .blended-addressbar-pane-field {
-        height: var(--blended-addressbar-preferred-height) !important;
-    }
-
-    :root:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]):not([inFullscreen="true"])
-    #tabbrowser-tabpanels[zen-split-view="true"] > .browserSidebarContainer[zen-split="true"]:not(.zen-glance-overlay)
-    > .browserContainer:has(> .blended-addressbar-pane-bar) {
-        --blended-addressbar-pane-bar-height: calc(var(--blended-addressbar-preferred-height) + 6px);
+@media (-moz-pref("uc.blended-addressbar.toolbar-height", "extra-compact")) {
+    #nav-bar {
+        --zen-toolbar-height: 32px;
     }
 }
 

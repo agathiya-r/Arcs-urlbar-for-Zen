@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.28
+// @version        1.7.29
 // ==/UserScript==
 
 (() => {
@@ -3266,6 +3266,7 @@
   const splitEditorProperties = ['left', 'top', 'width', 'results-height'];
   let addressDisplay = null;
   let addressDisplayObserver = null;
+  let addressDisplayInitObserver = null;
 
   function refreshAddressDisplay() {
     if (!addressDisplay || addressbarEnhancementsDisposed) return;
@@ -3300,8 +3301,19 @@
   }
 
   function initAddressDisplay() {
+    if (addressbarEnhancementsDisposed || addressDisplay) return;
     const box = chromeDoc.querySelector('#urlbar .urlbar-input-box');
-    if (!box || addressDisplay) return;
+    if (!box) {
+      // Zen constructs moz-urlbar after gBrowser becomes available. Retry when
+      // its children arrive instead of giving up for the lifetime of the window.
+      if (!addressDisplayInitObserver) {
+        addressDisplayInitObserver = new MutationObserver(initAddressDisplay);
+        addressDisplayInitObserver.observe(chromeDoc.documentElement, { childList: true, subtree: true });
+      }
+      return;
+    }
+    addressDisplayInitObserver?.disconnect();
+    addressDisplayInitObserver = null;
     addressDisplay = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', 'span');
     addressDisplay.className = 'blended-addressbar-display-text';
     addressDisplay.setAttribute('aria-hidden', 'true');
@@ -3529,6 +3541,7 @@
     splitEditorObserver?.disconnect();
     splitEditorResizeObserver?.disconnect();
     addressDisplayObserver?.disconnect();
+    addressDisplayInitObserver?.disconnect();
     addressDisplay?.remove();
     addressDisplay = null;
     chromeDoc.documentElement.removeAttribute('data-blended-address-display');

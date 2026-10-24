@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.29 - 2026-10-24
+
+- Initialize the domain-only and centered idle label after Zen finishes constructing its URL bar, fixing both settings in live browser windows.
+- Replace the field-height setting with a whole top-toolbar height setting. Compact (36px) is now the default; Extra compact is 32px.
+
 ## 1.7.28 - 2026-10-24
 
 - Add optional domain-only idle display and browser-window-centered address text while preserving native full-URL editing.

@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.28', () => {
+test('release metadata stays synchronized at version 1.7.29', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.28');
+  assert.equal(theme.version, '1.7.29');
   assert.equal(theme.updatedAt, '2026-10-24');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.28/);
-  assert.match(marketplace, /Version: `1\.7\.28`/);
-  assert.match(marketplace, /"version": "1\.7\.28"/);
+  assert.match(script, /\/\/ @version\s+1\.7\.29/);
+  assert.match(marketplace, /Version: `1\.7\.29`/);
+  assert.match(marketplace, /"version": "1\.7\.29"/);
   assert.match(marketplace, /"updatedAt": "2026-10-24"/);
-  assert.match(changelog, /## 1\.7\.28 - 2026-10-24/);
+  assert.match(changelog, /## 1\.7\.29 - 2026-10-24/);
 });
 
 test('address display options preserve native editing and default layout', () => {
@@ -88,9 +88,9 @@ test('address display options preserve native editing and default layout', () =>
 
   assert.equal(setting('domain-only').defaultValue, false);
   assert.equal(setting('center-text').defaultValue, false);
-  assert.equal(setting('addressbar-height').defaultValue, 'default');
+  assert.equal(setting('toolbar-height').defaultValue, 'compact');
   assert.deepEqual(
-    setting('addressbar-height').options.map(option => option.value),
+    setting('toolbar-height').options.map(option => option.value),
     ['default', 'compact', 'extra-compact']
   );
   assert.match(script, /const nativeText = chromeDoc\.getElementById\('urlbar-input'\)\?\.value/);
@@ -98,8 +98,9 @@ test('address display options preserve native editing and default layout', () =>
   assert.match(script, /addressDisplay\.setAttribute\('aria-hidden', 'true'\)/);
   assert.match(css, /#urlbar:not\(:is\(\[focused\], \[open\], \[breakout-extend="true"\], :focus-within\)\) #urlbar-input/);
   assert.match(css, /@media \(-moz-pref\("uc\.blended-addressbar\.domain-only"\)\)/);
-  assert.match(css, /--blended-addressbar-preferred-height: 30px/);
-  assert.match(css, /--blended-addressbar-preferred-height: 26px/);
+  assert.match(script, /addressDisplayInitObserver\.observe\(chromeDoc\.documentElement, \{ childList: true, subtree: true \}\)/);
+  assert.match(css, /#nav-bar\s*\{\s*--zen-toolbar-height: 36px/);
+  assert.match(css, /#nav-bar\s*\{\s*--zen-toolbar-height: 32px/);
 
   const { getAddressDisplay } = loadScriptModule('split-addressbars.js');
   assert.equal(getAddressDisplay('https://github.com/example/repo', 'github.com/example/repo', true), 'github.com');
