@@ -1,6 +1,49 @@
 @import "styles/loadbar.css";
 @import "styles/header-chrome.css";
 
+/* The native input retains the full URL and resumes normal editing on focus. */
+:root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) .urlbar-input-box {
+    position: relative;
+}
+
+:root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) #urlbar-input {
+    color: transparent !important;
+}
+
+.blended-addressbar-display-text {
+    display: none;
+}
+
+:root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) .blended-addressbar-display-text:not([hidden]) {
+    display: block;
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform: translateY(-50%);
+    color: var(--zen-tab-header-foreground, inherit);
+    pointer-events: none;
+}
+
+:root[data-blended-address-center] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) .blended-addressbar-display-text:not([hidden]) {
+    inset-inline-start: auto;
+    max-width: min(100%, 44ch);
+    transform: translate(-50%, -50%);
+}
+
+@media (-moz-pref("uc.blended-addressbar.domain-only")) {
+    .blended-addressbar-pane-path {
+        display: none;
+    }
+}
+
+:root[data-blended-address-center] .blended-addressbar-pane-address {
+    justify-content: center;
+}
+
 :root {
     --blended-addressbar-frame-gap: var(--zen-element-separation);
     --blended-addressbar-pane-inner-highlight: inset 0 0 0 0px transparent;
@@ -1137,3 +1180,38 @@ menupopup[placespopup="true"] :is(menu, menuitem, .bookmark-item):is([disabled],
 #tabbrowser-tabpanels > .browserSidebarContainer.deck-selected > .browserContainer > .blended-addressbar-pane-bar > .blended-addressbar-pane-field {
     visibility: hidden !important;
 }
+
+@media (-moz-pref("uc.blended-addressbar.addressbar-height", "compact")) {
+    :root {
+        --blended-addressbar-preferred-height: 30px;
+    }
+}
+
+@media (-moz-pref("uc.blended-addressbar.addressbar-height", "extra-compact")) {
+    :root {
+        --blended-addressbar-preferred-height: 26px;
+    }
+}
+
+@media (-moz-pref("uc.blended-addressbar.addressbar-height", "compact")),
+       (-moz-pref("uc.blended-addressbar.addressbar-height", "extra-compact")) {
+    :root:not([data-blended-split-editor]) #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) {
+        --urlbar-container-height: var(--blended-addressbar-preferred-height);
+    }
+
+    :root:not([data-blended-split-editor]) #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) > .urlbar-input-container {
+        height: var(--blended-addressbar-preferred-height) !important;
+        min-height: var(--blended-addressbar-preferred-height) !important;
+    }
+
+    .blended-addressbar-pane-field {
+        height: var(--blended-addressbar-preferred-height) !important;
+    }
+
+    :root:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]):not([inFullscreen="true"])
+    #tabbrowser-tabpanels[zen-split-view="true"] > .browserSidebarContainer[zen-split="true"]:not(.zen-glance-overlay)
+    > .browserContainer:has(> .blended-addressbar-pane-bar) {
+        --blended-addressbar-pane-bar-height: calc(var(--blended-addressbar-preferred-height) + 6px);
+    }
+}
+

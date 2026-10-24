@@ -1,7 +1,7 @@
 var BlendedAddressbarModule = ((options) => {
   'use strict';
   const { chromeDoc, getTab, openAddress, copyAddress, openSite, getReadableForeground,
-    setStylePropertyIfChanged, removeStylePropertyIfChanged } = options;
+    setStylePropertyIfChanged, removeStylePropertyIfChanged, readBoolPref = () => false } = options;
   const bars = new Map();
 
   function getEditorPlacement(rect, viewportWidth, viewportHeight, editorHeaderHeight = rect.height) {
@@ -23,6 +23,15 @@ var BlendedAddressbarModule = ((options) => {
     return { host: href || 'New Tab', path: '', full: href || 'New Tab' };
   }
 
+  function getAddressDisplay(href, nativeText, domainOnly) {
+    if (domainOnly && /^https?:\/\//i.test(href || '')) {
+      try {
+        return new URL(href).hostname;
+      } catch {}
+    }
+    return nativeText || '';
+  }
+
   function makeElement(name, className) {
     const element = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', name);
     element.className = className;
@@ -38,7 +47,8 @@ var BlendedAddressbarModule = ((options) => {
     if (!record) return;
     const href = browser.currentURI?.spec || '';
     const { host, path, full } = formatAddress(href);
-    if (record.host.textContent !== host) record.host.textContent = host;
+    const displayHost = getAddressDisplay(href, host, readBoolPref('uc.blended-addressbar.domain-only', false));
+    if (record.host.textContent !== displayHost) record.host.textContent = displayHost;
     if (record.path.textContent !== path) record.path.textContent = path;
     setAttribute(record.address, 'title', full);
     setAttribute(record.address, 'aria-label', `Edit address: ${full}`);
@@ -122,5 +132,10 @@ var BlendedAddressbarModule = ((options) => {
     bars.clear();
   }
 
-  return Object.freeze({ bars, formatAddress, getEditorPlacement, sync, update, applyTheme, cleanup });
+  function refresh() {
+    for (const browser of bars.keys()) update(browser);
+  }
+
+  return Object.freeze({ bars, formatAddress, getAddressDisplay, getEditorPlacement, sync, update, refresh, applyTheme, cleanup });
 })(BlendedAddressbarModuleOptions);
+

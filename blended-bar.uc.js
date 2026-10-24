@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.27
+// @version        1.7.28
 // ==/UserScript==
 
 (() => {
@@ -40,6 +40,8 @@
   const loadbarFocusColorPref = `${loadbarPrefBranch}focus-color`;
   const defaultLoadbarMode = 'glow';
   const addressbarPrefBranch = 'uc.blended-addressbar.';
+  const domainOnlyPref = `${addressbarPrefBranch}domain-only`;
+  const centerTextPref = `${addressbarPrefBranch}center-text`;
   const frameRadiusPref = `${addressbarPrefBranch}frame-radius`;
   const frameRadiusDisabledPref = `${addressbarPrefBranch}frame-radius.disabled`;
   const frameGapPref = `${addressbarPrefBranch}frame-gap`;
@@ -3248,6 +3250,7 @@
       chromeDoc.getElementById('zen-copy-url-button')?.click();
     },
     getReadableForeground,
+    readBoolPref,
     setStylePropertyIfChanged,
     removeStylePropertyIfChanged
   });
@@ -3261,6 +3264,54 @@
   let splitEditorObserver = null;
   let splitEditorResizeObserver = null;
   const splitEditorProperties = ['left', 'top', 'width', 'results-height'];
+  let addressDisplay = null;
+  let addressDisplayObserver = null;
+
+  function refreshAddressDisplay() {
+    if (!addressDisplay || addressbarEnhancementsDisposed) return;
+    const root = chromeDoc.documentElement;
+    const domainOnly = readBoolPref(domainOnlyPref, false);
+    const centered = readBoolPref(centerTextPref, false);
+    root.toggleAttribute('data-blended-address-center', centered);
+    if (!domainOnly && !centered) {
+      root.removeAttribute('data-blended-address-display');
+      return;
+    }
+
+    const browser = gBrowser.selectedBrowser;
+    const href = browser?.currentURI?.spec || '';
+    const nativeText = chromeDoc.getElementById('urlbar-input')?.value || '';
+    const label = splitAddressbars.getAddressDisplay(href, nativeText, domainOnly);
+    root.toggleAttribute('data-blended-address-display', (domainOnly || centered) && !!label);
+    if (addressDisplay.textContent !== label) addressDisplay.textContent = label;
+    addressDisplay.hidden = !label;
+
+    const box = addressDisplay.parentElement?.getBoundingClientRect();
+    if (centered && box?.width) {
+      const center = Math.max(8, Math.min(box.width - 8, window.innerWidth / 2 - box.left));
+      setStylePropertyIfChanged(addressDisplay.style, 'left', `${center}px`);
+    } else {
+      removeStylePropertyIfChanged(addressDisplay.style, 'left');
+    }
+  }
+
+  function scheduleAddressDisplay() {
+    requestAnimationFrame(refreshAddressDisplay);
+  }
+
+  function initAddressDisplay() {
+    const box = chromeDoc.querySelector('#urlbar .urlbar-input-box');
+    if (!box || addressDisplay) return;
+    addressDisplay = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', 'span');
+    addressDisplay.className = 'blended-addressbar-display-text';
+    addressDisplay.setAttribute('aria-hidden', 'true');
+    box.appendChild(addressDisplay);
+    addressDisplayObserver = new MutationObserver(scheduleAddressDisplay);
+    addressDisplayObserver.observe(chromeDoc.getElementById('urlbar'), {
+      attributes: true, attributeFilter: ['focused', 'open', 'breakout-extend']
+    });
+    refreshAddressDisplay();
+  }
 
   function captureSplitAddressAppearance() {
     const urlbar = chromeDoc.getElementById('urlbar');
@@ -3465,6 +3516,7 @@
       urlbar.addEventListener('focusin', positionSplitEditor);
     }
     window.addEventListener('resize', positionSplitEditor);
+    window.addEventListener('resize', scheduleAddressDisplay);
     refreshSplitAddressbars();
   }
 
@@ -3476,8 +3528,14 @@
     splitRootObserver?.disconnect();
     splitEditorObserver?.disconnect();
     splitEditorResizeObserver?.disconnect();
+    addressDisplayObserver?.disconnect();
+    addressDisplay?.remove();
+    addressDisplay = null;
+    chromeDoc.documentElement.removeAttribute('data-blended-address-display');
+    chromeDoc.documentElement.removeAttribute('data-blended-address-center');
     chromeDoc.getElementById('urlbar')?.removeEventListener('focusin', positionSplitEditor);
     window.removeEventListener('resize', positionSplitEditor);
+    window.removeEventListener('resize', scheduleAddressDisplay);
     loadbarStates.clear();
     renderedSampleRequests.clear();
     paintLoadProgress(chromeDoc.getElementById('urlbar'), null);
@@ -3503,8 +3561,19 @@
     observeLoadbarPrefs();
     observeNativeZenThemePrefs();
     observeSplitAddressbars();
+    initAddressDisplay();
+    const displayPrefObserver = {
+      observe(_subject, topic, name) {
+        if (topic === 'nsPref:changed' && (name === domainOnlyPref || name === centerTextPref)) {
+          refreshAddressDisplay();
+          if (name === domainOnlyPref) splitAddressbars.refresh();
+        }
+      }
+    };
+    try { getPrefs()?.addObserver(addressbarPrefBranch, displayPrefObserver); } catch {}
 
     gBrowser.tabContainer.addEventListener('TabSelect', () => {
+      scheduleAddressDisplay();
       chromeDoc.documentElement.removeAttribute('data-blended-addressbar-color-loading');
       resetThemeArbitration(getBrowserHref(gBrowser.selectedBrowser));
       scheduleSplitAddressbars();
@@ -3576,6 +3645,7 @@
           const sameDocumentFlag = Ci?.nsIWebProgressListener?.LOCATION_CHANGE_SAME_DOCUMENT || 0;
           if (webProgress?.isTopLevel) {
             splitAddressbars.update(browserArg);
+            if (browserArg === gBrowser.selectedBrowser) scheduleAddressDisplay();
             if (splitAddressbars.bars.has(browserArg)) requestPersistentFrameTheme(browserArg);
           }
           if (flags & sameDocumentFlag) return;
@@ -3615,6 +3685,7 @@
               }
             }
             splitAddressbars.update(browserArg);
+            if (browserArg === gBrowser.selectedBrowser) scheduleAddressDisplay();
           }
           if (!matches) return;
           const listener = Ci && Ci.nsIWebProgressListener
@@ -3647,6 +3718,7 @@
     try { gBrowser.addTabsProgressListener(pl); } catch {}
     const cleanup = () => {
       cleanupAddressbarEnhancements();
+      try { getPrefs()?.removeObserver(addressbarPrefBranch, displayPrefObserver); } catch {}
       try { gBrowser.removeTabsProgressListener(pl); } catch {}
     };
     window.addEventListener('unload', cleanup, { once: true });
@@ -3659,3 +3731,4 @@
 
   initWhenReady();
 })();
+

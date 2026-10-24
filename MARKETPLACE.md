@@ -3,13 +3,13 @@
 ## Ready
 
 - Name: `Blended Addressbar` (18 characters).
-- Version: `1.7.27`.
+- Version: `1.7.28`.
 - Description: `A page-aware addressbar that blends Zen chrome with the active website.` (71 characters).
 - Metadata: `theme.json`.
 - Preferences: `preferences.json`.
 - README: `README.md`.
 - Zen target: `fork: ["zen"]`.
-- Public repository and homepage: `https://github.com/kkugot/blended-addressbar`.
+- Public repository and homepage: `https://github.com/igeag/blended-addressbar`.
 - License: `LICENSE` (MIT).
 - Marketplace screenshot: `marketplace-preview.png` (600 × 400 PNG).
 
@@ -26,13 +26,13 @@
   "id": "blended-addressbar",
   "name": "Blended Addressbar",
   "description": "A page-aware addressbar that blends Zen chrome with the active website.",
-  "homepage": "https://github.com/kkugot/blended-addressbar",
-  "readme": "https://raw.githubusercontent.com/kkugot/blended-addressbar/main/README.md",
-  "image": "https://raw.githubusercontent.com/kkugot/blended-addressbar/main/marketplace-preview.png",
+  "homepage": "https://github.com/igeag/blended-addressbar",
+  "readme": "https://raw.githubusercontent.com/igeag/blended-addressbar/main/README.md",
+  "image": "https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png",
   "author": "Kostiantyn Kugot",
-  "version": "1.7.27",
+  "version": "1.7.28",
   "ai": "partial",
-  "updatedAt": "2026-10-02",
+  "updatedAt": "2026-10-24",
   "style": {
     "chrome": "style.css",
     "content": ""
@@ -58,3 +58,4 @@
   ]
 }
 ```
+

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.28 - 2026-10-24
+
+- Add optional domain-only idle display and browser-window-centered address text while preserving native full-URL editing.
+- Add compact and extra-compact addressbar height choices, including split-pane fields.
+
 ## 1.7.27 - 2026-10-02
 
 - Remove automatic pane selection under the mouse cursor and its settings. This feature belongs to Alt-click Split View.
@@ -304,3 +309,4 @@
 - Added restore behavior so native Zen theme values are returned when window tinting is disabled or the script unloads.
 - Kept addressbar-specific colors on the existing Blended Addressbar variables while sharing page colors with Zen for native browser window tinting.
 - Fixed Zen omnibox text color by feeding the adaptive foreground into `--input-color`.
+

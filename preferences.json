@@ -65,6 +65,34 @@
     "size": "16px"
   },
   {
+    "type": "separator",
+    "label": "Addressbar Display",
+    "margin": "20px 0 12px 0"
+  },
+  {
+    "property": "uc.blended-addressbar.domain-only",
+    "label": "Show only the domain until editing",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "uc.blended-addressbar.center-text",
+    "label": "Center address text in the browser window",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "uc.blended-addressbar.addressbar-height",
+    "label": "Addressbar height",
+    "type": "dropdown",
+    "defaultValue": "default",
+    "options": [
+      { "label": "Original", "value": "default" },
+      { "label": "Compact (30px)", "value": "compact" },
+      { "label": "Extra compact (26px)", "value": "extra-compact" }
+    ]
+  },
+  {
     "property": "uc.blended-addressbar.window-tint.enabled",
     "label": "Tint browser window with page colors",
     "type": "checkbox"
@@ -145,3 +173,4 @@
     "type": "checkbox"
   }
 ]
+
