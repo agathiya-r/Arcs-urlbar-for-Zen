@@ -14,6 +14,7 @@ An Arc-inspired addressbar layout for Zen Browser, built on [Kostiantyn Kugot's 
 | Centered address | Centers the idle address label in the browser window when space allows. | Off |
 | Compact top toolbar | Shortens the **entire** top navigation toolbar, including its buttons. Choose Original, Compact (36px), or Extra compact (32px). | Compact |
 | Content-sized address field | When either address-display option is on, the idle clickable field fits its label and keeps Copy URL close. The native editor returns when you focus the addressbar. | Automatic with either option |
+| Zoom reset button | When the compact top addressbar is active and page zoom differs from 100%, Zen's native zoom percentage sits just beyond the field beside the site-data menu. Click it to reset zoom. | Automatic with either address-display option |
 
 The toolbar changes were made to bring Zen's top bar closer to Arc's compact appearance. The domain-only and centered options can be enabled separately in Sine. Zen's floating search bar keeps its native behavior.
 
@@ -59,6 +60,7 @@ Change these settings in Sine. The preference names below also identify them in 
 
 The domain-only setting applies to HTTP and HTTPS pages. Other page types keep Zen's native label. The display settings leave the underlying URL, copy actions, and address editing unchanged.
 In the top toolbar, the idle addressbar fits the displayed label and keeps Copy URL beside it. Focusing the addressbar restores Zen's full-width editor.
+When that compact address display is active, the native zoom reset button moves outside the URL field to avoid covering the domain. It returns to its original location when the compact display is off.
 
 ### Window tint
 

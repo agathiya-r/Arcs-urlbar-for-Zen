@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.33 - 2026-10-25
+
+- Place Zen's native zoom reset button just beyond the compact top addressbar, beside the site-data menu, so a zoom percentage does not overlap the displayed domain.
+- Keep its native click-to-reset behavior, and return it to Zen's URL bar when the compact address display is inactive. Toolbar height settings are unchanged.
+
 ## 1.7.32 - 2026-10-25
 
 - Keep Zen from overriding the compact addressbar's centered position, which caused the domain text to collide with the site controls.

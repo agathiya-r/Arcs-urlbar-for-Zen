@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.32
+// @version        1.7.33
 // ==/UserScript==
 
 (() => {
@@ -3268,6 +3268,73 @@
   let addressDisplayObserver = null;
   let addressDisplayInitObserver = null;
   let observedAddressbar = null;
+  let zoomButtonRecord = null;
+  let zoomButtonObserver = null;
+  let zoomButtonResizeObserver = null;
+  let zoomButtonFrame = 0;
+
+  function restoreZoomButton() {
+    if (!zoomButtonRecord) return;
+    zoomButtonObserver?.disconnect();
+    zoomButtonResizeObserver?.disconnect();
+    const { button, parent, next, style } = zoomButtonRecord;
+    if (parent?.isConnected) parent.insertBefore(button, next?.parentNode === parent ? next : null);
+    if (style === null) button.removeAttribute('style');
+    else button.setAttribute('style', style);
+    zoomButtonRecord = null;
+  }
+
+  function positionZoomButton() {
+    zoomButtonFrame = 0;
+    if (addressbarEnhancementsDisposed) return;
+    const root = chromeDoc.documentElement;
+    const button = chromeDoc.getElementById('urlbar-zoom-button');
+    const urlbar = chromeDoc.getElementById('urlbar');
+    const container = chromeDoc.getElementById('urlbar-container');
+    const menu = chromeDoc.getElementById('zen-site-data-icon-button');
+    const active = root.hasAttribute('data-blended-address-display')
+      && root.getAttribute('zen-single-toolbar') !== 'true'
+      && !root.hasAttribute('data-blended-split-bars')
+      && root.getAttribute('inDOMFullscreen') !== 'true'
+      && root.getAttribute('inFullscreen') !== 'true'
+      && !root.hasAttribute('customizing');
+    if (!active || !button || !urlbar || !container || !menu) {
+      restoreZoomButton();
+      return;
+    }
+
+    if (zoomButtonRecord?.button !== button) restoreZoomButton();
+    if (!zoomButtonRecord) {
+      zoomButtonRecord = {
+        button,
+        parent: button.parentNode,
+        next: button.nextSibling,
+        style: button.getAttribute('style')
+      };
+      container.insertBefore(button, urlbar.nextSibling);
+      zoomButtonObserver?.disconnect();
+      zoomButtonObserver = new MutationObserver(scheduleZoomButton);
+      zoomButtonObserver.observe(button, { attributes: true, attributeFilter: ['hidden', 'label'] });
+      zoomButtonResizeObserver?.disconnect();
+      zoomButtonResizeObserver = new ResizeObserver(scheduleZoomButton);
+      for (const element of [urlbar, menu, button]) zoomButtonResizeObserver.observe(element);
+    } else if (button.parentNode !== container) {
+      container.insertBefore(button, urlbar.nextSibling);
+    }
+    if (button.hidden) return;
+    const menuRect = menu.getBoundingClientRect();
+    if (!menuRect.width) return;
+    button.style.setProperty('position', 'fixed', 'important');
+    button.style.setProperty('z-index', '99', 'important');
+    button.style.setProperty('left', '0px', 'important');
+    const buttonRect = button.getBoundingClientRect();
+    button.style.setProperty('left', `${menuRect.right + 5 - buttonRect.left}px`, 'important');
+    button.style.setProperty('top', `${menuRect.top + (menuRect.height - buttonRect.height) / 2}px`, 'important');
+  }
+
+  function scheduleZoomButton() {
+    if (!addressbarEnhancementsDisposed && !zoomButtonFrame) zoomButtonFrame = requestAnimationFrame(positionZoomButton);
+  }
 
   function ensureAddressDisplay() {
     const urlbar = chromeDoc.getElementById('urlbar');
@@ -3298,6 +3365,7 @@
     root.toggleAttribute('data-blended-address-center', centered);
     if (!domainOnly && !centered) {
       root.removeAttribute('data-blended-address-display');
+      scheduleZoomButton();
       return;
     }
 
@@ -3335,6 +3403,7 @@
     } else {
       removeStylePropertyIfChanged(addressDisplay.style, 'left');
     }
+    scheduleZoomButton();
   }
 
   function scheduleAddressDisplay() {
@@ -3528,6 +3597,7 @@
       }
     }
     renderLoadProgress();
+    scheduleZoomButton();
   }
 
   function scheduleSplitAddressbars() {
@@ -3569,6 +3639,11 @@
     splitEditorResizeObserver?.disconnect();
     addressDisplayObserver?.disconnect();
     addressDisplayInitObserver?.disconnect();
+    zoomButtonObserver?.disconnect();
+    zoomButtonResizeObserver?.disconnect();
+    if (zoomButtonFrame) cancelAnimationFrame(zoomButtonFrame);
+    zoomButtonFrame = 0;
+    restoreZoomButton();
     addressDisplay?.remove();
     addressDisplay = null;
     observedAddressbar = null;
