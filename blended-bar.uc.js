@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.29
+// @version        1.7.30
 // ==/UserScript==
 
 (() => {
@@ -3267,9 +3267,31 @@
   let addressDisplay = null;
   let addressDisplayObserver = null;
   let addressDisplayInitObserver = null;
+  let observedAddressbar = null;
+
+  function ensureAddressDisplay() {
+    const urlbar = chromeDoc.getElementById('urlbar');
+    const box = urlbar?.querySelector('.urlbar-input-box');
+    if (!box) return false;
+    if (!addressDisplay) {
+      addressDisplay = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', 'span');
+      addressDisplay.className = 'blended-addressbar-display-text';
+      addressDisplay.setAttribute('aria-hidden', 'true');
+    }
+    if (addressDisplay.parentElement !== box) box.appendChild(addressDisplay);
+    if (observedAddressbar !== urlbar) {
+      addressDisplayObserver?.disconnect();
+      addressDisplayObserver = new MutationObserver(scheduleAddressDisplay);
+      addressDisplayObserver.observe(urlbar, {
+        attributes: true, attributeFilter: ['focused', 'open', 'breakout-extend']
+      });
+      observedAddressbar = urlbar;
+    }
+    return true;
+  }
 
   function refreshAddressDisplay() {
-    if (!addressDisplay || addressbarEnhancementsDisposed) return;
+    if (addressbarEnhancementsDisposed || !ensureAddressDisplay()) return;
     const root = chromeDoc.documentElement;
     const domainOnly = readBoolPref(domainOnlyPref, false);
     const centered = readBoolPref(centerTextPref, false);
@@ -3301,27 +3323,13 @@
   }
 
   function initAddressDisplay() {
-    if (addressbarEnhancementsDisposed || addressDisplay) return;
-    const box = chromeDoc.querySelector('#urlbar .urlbar-input-box');
-    if (!box) {
-      // Zen constructs moz-urlbar after gBrowser becomes available. Retry when
-      // its children arrive instead of giving up for the lifetime of the window.
-      if (!addressDisplayInitObserver) {
-        addressDisplayInitObserver = new MutationObserver(initAddressDisplay);
-        addressDisplayInitObserver.observe(chromeDoc.documentElement, { childList: true, subtree: true });
-      }
-      return;
-    }
-    addressDisplayInitObserver?.disconnect();
-    addressDisplayInitObserver = null;
-    addressDisplay = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', 'span');
-    addressDisplay.className = 'blended-addressbar-display-text';
-    addressDisplay.setAttribute('aria-hidden', 'true');
-    box.appendChild(addressDisplay);
-    addressDisplayObserver = new MutationObserver(scheduleAddressDisplay);
-    addressDisplayObserver.observe(chromeDoc.getElementById('urlbar'), {
-      attributes: true, attributeFilter: ['focused', 'open', 'breakout-extend']
+    if (addressbarEnhancementsDisposed || addressDisplayInitObserver) return;
+    // Zen can construct or replace the URL input after this script starts.
+    addressDisplayInitObserver = new MutationObserver(() => {
+      const box = chromeDoc.querySelector('#urlbar .urlbar-input-box');
+      if (box && addressDisplay?.parentElement !== box) scheduleAddressDisplay();
     });
+    addressDisplayInitObserver.observe(chromeDoc.documentElement, { childList: true, subtree: true });
     refreshAddressDisplay();
   }
 
@@ -3544,6 +3552,7 @@
     addressDisplayInitObserver?.disconnect();
     addressDisplay?.remove();
     addressDisplay = null;
+    observedAddressbar = null;
     chromeDoc.documentElement.removeAttribute('data-blended-address-display');
     chromeDoc.documentElement.removeAttribute('data-blended-address-center');
     chromeDoc.getElementById('urlbar')?.removeEventListener('focusin', positionSplitEditor);
@@ -3568,13 +3577,13 @@
       return;
     }
 
+    initAddressDisplay();
     applyFramePrefs();
     observeFramePrefs();
     applyLoadbarPrefs();
     observeLoadbarPrefs();
     observeNativeZenThemePrefs();
     observeSplitAddressbars();
-    initAddressDisplay();
     const displayPrefObserver = {
       observe(_subject, topic, name) {
         if (topic === 'nsPref:changed' && (name === domainOnlyPref || name === centerTextPref)) {

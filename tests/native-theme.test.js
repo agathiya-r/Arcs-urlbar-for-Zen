@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.29', () => {
+test('release metadata stays synchronized at version 1.7.30', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.29');
-  assert.equal(theme.updatedAt, '2026-10-24T22:45:58Z');
+  assert.equal(theme.version, '1.7.30');
+  assert.equal(theme.updatedAt, '2026-10-25T04:55:41Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.29/);
-  assert.match(marketplace, /Version: `1\.7\.29`/);
-  assert.match(marketplace, /"version": "1\.7\.29"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-24T22:45:58Z"/);
-  assert.match(changelog, /## 1\.7\.29 - 2026-10-24/);
+  assert.match(script, /\/\/ @version\s+1\.7\.30/);
+  assert.match(marketplace, /Version: `1\.7\.30`/);
+  assert.match(marketplace, /"version": "1\.7\.30"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-25T04:55:41Z"/);
+  assert.match(changelog, /## 1\.7\.30 - 2026-10-25/);
 });
 
 test('address display options preserve native editing and default layout', () => {

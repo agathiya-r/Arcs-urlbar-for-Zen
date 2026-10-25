@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.30 - 2026-10-25
+
+- Start the domain-only and centered address display before other browser-chrome setup, and reconnect it when Zen rebuilds the URL input. The toolbar height settings are unchanged.
+
 ## 1.7.29 - 2026-10-24
 
 - Initialize the domain-only and centered idle label after Zen finishes constructing its URL bar, fixing both settings in live browser windows.
