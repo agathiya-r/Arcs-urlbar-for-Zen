@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.32 - 2026-10-25
+
+- Keep Zen from overriding the compact addressbar's centered position, which caused the domain text to collide with the site controls.
+- Measure the applied position when recentering so ignored offsets cannot accumulate. The toolbar height is unchanged.
+
 ## 1.7.31 - 2026-10-25
 
 - Fully hide Zen's native URL text while the domain label is shown, including text that remained visible behind the label.

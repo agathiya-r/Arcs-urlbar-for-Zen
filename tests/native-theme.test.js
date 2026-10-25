@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.31', () => {
+test('release metadata stays synchronized at version 1.7.32', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.31');
-  assert.equal(theme.updatedAt, '2026-10-25T05:17:20Z');
+  assert.equal(theme.version, '1.7.32');
+  assert.equal(theme.updatedAt, '2026-10-25T05:34:32Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.31/);
-  assert.match(marketplace, /Version: `1\.7\.31`/);
-  assert.match(marketplace, /"version": "1\.7\.31"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-25T05:17:20Z"/);
-  assert.match(changelog, /## 1\.7\.31 - 2026-10-25/);
+  assert.match(script, /\/\/ @version\s+1\.7\.32/);
+  assert.match(marketplace, /Version: `1\.7\.32`/);
+  assert.match(marketplace, /"version": "1\.7\.32"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-25T05:34:32Z"/);
+  assert.match(changelog, /## 1\.7\.32 - 2026-10-25/);
 });
 
 test('address display options preserve native editing and default layout', () => {
@@ -99,6 +99,8 @@ test('address display options preserve native editing and default layout', () =>
   assert.match(css, /#urlbar:not\(:is\(\[focused\], \[open\], \[breakout-extend="true"\], :focus-within\)\) :is\(#urlbar-input, #urlbar-scheme\)/);
   assert.match(css, /opacity: 0 !important/);
   assert.match(css, /flex: 0 0 var\(--blended-addressbar-idle-width\) !important/);
+  assert.match(css, /left: var\(--blended-addressbar-idle-offset\) !important/);
+  assert.match(script, /parseFloat\(window\.getComputedStyle\(urlbar\)\.left\) \|\| 0/);
   assert.match(css, /@media \(-moz-pref\("uc\.blended-addressbar\.domain-only"\)\)/);
   assert.match(script, /addressDisplayInitObserver\.observe\(chromeDoc\.documentElement, \{ childList: true, subtree: true \}\)/);
   assert.match(css, /#nav-bar\s*\{\s*--zen-toolbar-height: 36px/);

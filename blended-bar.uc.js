@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.31
+// @version        1.7.32
 // ==/UserScript==
 
 (() => {
@@ -3318,7 +3318,7 @@
       if (width >= 96) {
         setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-width', `${width}px`);
         if (centered) {
-          const currentOffset = parseFloat(urlbar.style.getPropertyValue('--blended-addressbar-idle-offset')) || 0;
+          const currentOffset = parseFloat(window.getComputedStyle(urlbar).left) || 0;
           const compactBox = addressDisplay.parentElement.getBoundingClientRect();
           const baseCenter = compactBox.left + compactBox.width / 2 - currentOffset;
           setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-offset', `${window.innerWidth / 2 - baseCenter}px`);

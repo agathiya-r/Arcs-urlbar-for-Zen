@@ -14,7 +14,7 @@
 :root[data-blended-address-display]:not([zen-single-toolbar="true"]) #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) {
     flex: 0 0 var(--blended-addressbar-idle-width) !important;
     width: var(--blended-addressbar-idle-width) !important;
-    left: var(--blended-addressbar-idle-offset);
+    left: var(--blended-addressbar-idle-offset) !important;
 }
 
 .blended-addressbar-display-text {
