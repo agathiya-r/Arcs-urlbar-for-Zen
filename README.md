@@ -1,10 +1,23 @@
 # Blended Addressbar
 
-Blended Addressbar is a Zen Browser mod that adds a compact, page-aware browser frame to Zen's Only Sidebar, Sidebar and Top Toolbar, and Collapsed Sidebar layouts. Dual-toolbar layouts also blend the addressbar with the active page.
+An Arc-inspired addressbar layout for Zen Browser, built on [Kostiantyn Kugot's original Blended Addressbar](https://github.com/kkugot/blended-addressbar). The original mod supplies the page-aware colors, browser frame, split-view controls, bookmarks behavior, and loading indicators. This fork adds optional ways to display the address in Zen's top toolbar.
 
 ![Blended Addressbar preview](https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png)
 
-## Features
+*Preview of the original mod; the fork's toolbar options are configured in Sine. Arc is a visual reference, and this project is not affiliated with Arc or The Browser Company.*
+
+## Added in this fork
+
+| Option | What it does | Default |
+| --- | --- | --- |
+| Domain-only address | Shows the hostname, such as `github.com`, while the top addressbar is idle. The full URL remains available for editing and copying. | Off |
+| Centered address | Centers the idle address label in the browser window when space allows. | Off |
+| Compact top toolbar | Shortens the **entire** top navigation toolbar, including its buttons. Choose Original, Compact (36px), or Extra compact (32px). | Compact |
+| Content-sized address field | When either address-display option is on, the idle clickable field fits its label and keeps Copy URL close. The native editor returns when you focus the addressbar. | Automatic with either option |
+
+The toolbar changes were made to bring Zen's top bar closer to Arc's compact appearance. The domain-only and centered options can be enabled separately in Sine. Zen's floating search bar keeps its native behavior.
+
+## Features from the original mod
 
 - Addressbar colors that follow the active page in dual-toolbar layouts, with matching text and icon contrast.
 - Optional window tint with adjustable strength.
@@ -20,11 +33,11 @@ Blended Addressbar is a Zen Browser mod that adds a compact, page-aware browser 
 1. Install [Sine](https://github.com/CosmoCreeper/Sine#installation) and restart Zen.
 2. In Sine settings, install the mod from the repository `igeag/blended-addressbar`.
 3. If installing from this GitHub repository, turn on Sine's **Enable installing JS from unofficial sources** setting (`sine.allow-unsafe-js`) and restart Zen. This setting permits JavaScript from all unofficial Sine sources, so enable it only if you trust the mods you have installed. Without it, Sine loads the CSS (including toolbar height) but skips the script required for domain-only and centered address text.
-4. Enable **Blended Addressbar** and open its settings to adjust the frame, window tint, and loading indicator.
+4. Enable **Blended Addressbar** and open its Sine settings. The **Addressbar Display** section contains this fork's domain, centering, and top-toolbar height options; the other sections contain the original mod's frame, tint, and loading settings.
 
 ## Compatibility
 
-Supported Zen layouts: **Only Sidebar**, **Sidebar and Top Toolbar**, and **Collapsed Sidebar**. Only Sidebar keeps Zen's native sidebar addressbar while the frame, window tint, split view, compact mode, and loading bar remain supported. Visual validation is still recommended after Zen updates because browser chrome selectors can change.
+Supported Zen layouts: **Only Sidebar**, **Sidebar and Top Toolbar**, and **Collapsed Sidebar**. The new address display and toolbar-height options apply to Zen's top toolbar; Only Sidebar keeps its native sidebar addressbar while the original frame, window tint, split view, compact mode, and loading bar remain supported. Visual validation is still recommended after Zen updates because browser chrome selectors can change.
 
 ## Split addresses
 
@@ -83,17 +96,13 @@ Corner shape follows Zen's `layout.css.corner-shape.enabled` setting and `--zen-
 
 URL bar glow adds a soft gradient across the whole field, a moving bright tip and a gently breathing progress line while loading. Rendered page colors update as they paint during loading. Reduced-motion settings disable the breathing animation. It follows each browser’s loading progress, with an estimate when progress is unavailable and a short completion fade. It uses the existing focus color setting, or the local header foreground when that setting is off.
 
-## Feedback
-
-[Report a problem](https://github.com/kkugot/blended-addressbar/issues) with your Zen version, operating system, toolbar layout, and a screenshot. Include the page URL when the issue involves page colors.
-
 ## License
 
 [MIT](https://github.com/igeag/blended-addressbar/blob/main/LICENSE).
 
 ## Credits
 
-This repository is a fork of [kkugot/blended-addressbar](https://github.com/kkugot/blended-addressbar).
+**Original creator and author:** [Kostiantyn Kugot (@kkugot)](https://github.com/kkugot), who created [Blended Addressbar](https://github.com/kkugot/blended-addressbar) and its core features. This repository is an independent fork adding the Arc-inspired toolbar display options above. The original MIT copyright notice is preserved in [LICENSE](LICENSE).
 
 The sampler adapts ideas from [caezium/zen-page-tint](https://github.com/caezium/zen-page-tint), especially the `requestAnimationFrame` scheduling pattern, persistent content sampler, and bounded page-color cache.
 
