@@ -45,7 +45,7 @@ Change these settings in Sine. The preference names below also identify them in 
 - `uc.blended-addressbar.toolbar-height`: choose Original, Compact (36px), or Extra compact (32px) for the whole top navigation toolbar, including its buttons. Compact is the default. This replaces the earlier addressbar-field height setting.
 
 The domain-only setting applies to HTTP and HTTPS pages. Other page types keep Zen's native label. The display settings leave the underlying URL, copy actions, and address editing unchanged.
-In the top toolbar, the idle addressbar fits the displayed label and keeps Copy URL beside it. When Zen opens its floating search editor, the top toolbar continues to show the page address that was there; typing in the floating editor does not replace it. This also works with the display settings turned off.
+In the top toolbar, the idle addressbar fits the displayed label and keeps Copy URL beside it. Focusing the addressbar restores Zen's full-width editor.
 
 ### Window tint
 

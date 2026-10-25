@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.33
+// @version        1.7.32
 // ==/UserScript==
 
 (() => {
@@ -3265,9 +3265,6 @@
   let splitEditorResizeObserver = null;
   const splitEditorProperties = ['left', 'top', 'width', 'results-height'];
   let addressDisplay = null;
-  let toolbarAddressDisplay = null;
-  let toolbarAddressText = '';
-  let toolbarAddressHref = '';
   let addressDisplayObserver = null;
   let addressDisplayInitObserver = null;
   let observedAddressbar = null;
@@ -3275,25 +3272,18 @@
   function ensureAddressDisplay() {
     const urlbar = chromeDoc.getElementById('urlbar');
     const box = urlbar?.querySelector('.urlbar-input-box');
-    const container = chromeDoc.getElementById('urlbar-container');
-    if (!box || !container) return false;
+    if (!box) return false;
     if (!addressDisplay) {
       addressDisplay = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', 'span');
       addressDisplay.className = 'blended-addressbar-display-text';
       addressDisplay.setAttribute('aria-hidden', 'true');
     }
     if (addressDisplay.parentElement !== box) box.appendChild(addressDisplay);
-    if (!toolbarAddressDisplay) {
-      toolbarAddressDisplay = chromeDoc.createElementNS('http://www.w3.org/1999/xhtml', 'span');
-      toolbarAddressDisplay.className = 'blended-addressbar-toolbar-display';
-      toolbarAddressDisplay.setAttribute('aria-hidden', 'true');
-    }
-    if (toolbarAddressDisplay.parentElement !== container) container.appendChild(toolbarAddressDisplay);
     if (observedAddressbar !== urlbar) {
       addressDisplayObserver?.disconnect();
       addressDisplayObserver = new MutationObserver(scheduleAddressDisplay);
       addressDisplayObserver.observe(urlbar, {
-        attributes: true, attributeFilter: ['focused', 'open', 'breakout-extend', 'zen-floating-urlbar']
+        attributes: true, attributeFilter: ['focused', 'open', 'breakout-extend']
       });
       observedAddressbar = urlbar;
     }
@@ -3306,39 +3296,22 @@
     const domainOnly = readBoolPref(domainOnlyPref, false);
     const centered = readBoolPref(centerTextPref, false);
     root.toggleAttribute('data-blended-address-center', centered);
-    const browser = gBrowser.selectedBrowser;
-    const href = browser?.currentURI?.spec || '';
-    const nativeText = chromeDoc.getElementById('urlbar-input')?.value || '';
-    const label = splitAddressbars.getAddressDisplay(href, nativeText, domainOnly);
-    const urlbar = chromeDoc.getElementById('urlbar');
-    const container = chromeDoc.getElementById('urlbar-container');
-    const floating = urlbar?.getAttribute('zen-floating-urlbar') === 'true' &&
-      urlbar.matches(':is([focused], [open], [breakout-extend], :focus-within)');
-    if (!floating) {
-      toolbarAddressText = label;
-      toolbarAddressHref = href;
-    } else if (toolbarAddressHref !== href) {
-      const { host, path } = splitAddressbars.formatAddress(href);
-      toolbarAddressText = domainOnly ? splitAddressbars.getAddressDisplay(href, host, true) : `${host}${path}`;
-      toolbarAddressHref = href;
-    }
-    if (toolbarAddressDisplay.textContent !== toolbarAddressText) toolbarAddressDisplay.textContent = toolbarAddressText;
-    toolbarAddressDisplay.hidden = !toolbarAddressText || root.getAttribute('zen-single-toolbar') === 'true';
-    if (container) {
-      const rect = container.getBoundingClientRect();
-      setStylePropertyIfChanged(root.style, '--blended-addressbar-toolbar-center-y', `${rect.top + rect.height / 2}px`);
-      setStylePropertyIfChanged(root.style, '--blended-addressbar-toolbar-max-width', `${Math.max(0, rect.width - 24)}px`);
-    }
     if (!domainOnly && !centered) {
       root.removeAttribute('data-blended-address-display');
       return;
     }
 
+    const browser = gBrowser.selectedBrowser;
+    const href = browser?.currentURI?.spec || '';
+    const nativeText = chromeDoc.getElementById('urlbar-input')?.value || '';
+    const label = splitAddressbars.getAddressDisplay(href, nativeText, domainOnly);
     root.toggleAttribute('data-blended-address-display', (domainOnly || centered) && !!label);
     if (addressDisplay.textContent !== label) addressDisplay.textContent = label;
     addressDisplay.hidden = !label;
 
+    const urlbar = chromeDoc.getElementById('urlbar');
     const compactTopBar = !!label && chromeDoc.documentElement.getAttribute('zen-single-toolbar') !== 'true';
+    const container = chromeDoc.getElementById('urlbar-container');
     if (compactTopBar && container && urlbar) {
       const available = Math.max(0, container.getBoundingClientRect().width - 8);
       const width = Math.min(available, Math.max(124, Math.ceil(addressDisplay.scrollWidth) + 96));
@@ -3598,13 +3571,7 @@
     addressDisplayInitObserver?.disconnect();
     addressDisplay?.remove();
     addressDisplay = null;
-    toolbarAddressDisplay?.remove();
-    toolbarAddressDisplay = null;
-    toolbarAddressText = '';
-    toolbarAddressHref = '';
     observedAddressbar = null;
-    removeStylePropertyIfChanged(chromeDoc.documentElement.style, '--blended-addressbar-toolbar-center-y');
-    removeStylePropertyIfChanged(chromeDoc.documentElement.style, '--blended-addressbar-toolbar-max-width');
     chromeDoc.documentElement.removeAttribute('data-blended-address-display');
     chromeDoc.documentElement.removeAttribute('data-blended-address-center');
     chromeDoc.getElementById('urlbar')?.removeEventListener('focusin', positionSplitEditor);

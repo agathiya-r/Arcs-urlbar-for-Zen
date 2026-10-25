@@ -42,27 +42,6 @@
     transform: translate(-50%, -50%);
 }
 
-/* Zen floats the editor out of the toolbar; keep the page address in its vacated field. */
-.blended-addressbar-toolbar-display {
-    display: none;
-}
-
-:root:not([zen-single-toolbar="true"]) #urlbar-container:has(> #urlbar[zen-floating-urlbar="true"]:is([focused], [open], [breakout-extend], :focus-within)) > .blended-addressbar-toolbar-display:not([hidden]) {
-    display: block;
-    position: fixed;
-    z-index: 1000;
-    inset-inline-start: 50vw;
-    inset-block-start: var(--blended-addressbar-toolbar-center-y);
-    max-width: var(--blended-addressbar-toolbar-max-width);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    transform: translate(-50%, -50%);
-    color: var(--zen-tab-header-foreground, inherit);
-    font-size: 1.5em;
-    pointer-events: none;
-}
-
 @media (-moz-pref("uc.blended-addressbar.domain-only")) {
     .blended-addressbar-pane-path {
         display: none;
