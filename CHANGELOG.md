@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.33 - 2026-10-25
+
+- Keep the current page address visible in the top toolbar while Zen's floating search editor is open. The displayed address remains unchanged as the user types in the floating editor.
+- Leave the floating editor, suggestions, compact idle addressbar, and toolbar height unchanged.
+
 ## 1.7.32 - 2026-10-25
 
 - Keep Zen from overriding the compact addressbar's centered position, which caused the domain text to collide with the site controls.
