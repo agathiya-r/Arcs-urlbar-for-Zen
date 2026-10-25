@@ -19,7 +19,8 @@ Blended Addressbar is a Zen Browser mod that adds a compact, page-aware browser 
 
 1. Install [Sine](https://github.com/CosmoCreeper/Sine#installation) and restart Zen.
 2. In Sine settings, install the mod from the repository `igeag/blended-addressbar`.
-3. Enable **Blended Addressbar** and open its settings to adjust the frame, window tint, and loading indicator.
+3. If installing from this GitHub repository, turn on Sine's **Enable installing JS from unofficial sources** setting (`sine.allow-unsafe-js`) and restart Zen. This setting permits JavaScript from all unofficial Sine sources, so enable it only if you trust the mods you have installed. Without it, Sine loads the CSS (including toolbar height) but skips the script required for domain-only and centered address text.
+4. Enable **Blended Addressbar** and open its settings to adjust the frame, window tint, and loading indicator.
 
 ## Compatibility
 
