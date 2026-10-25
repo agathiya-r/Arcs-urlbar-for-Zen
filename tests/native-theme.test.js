@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.30', () => {
+test('release metadata stays synchronized at version 1.7.31', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.30');
-  assert.equal(theme.updatedAt, '2026-10-25T04:55:41Z');
+  assert.equal(theme.version, '1.7.31');
+  assert.equal(theme.updatedAt, '2026-10-25T05:17:20Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.30/);
-  assert.match(marketplace, /Version: `1\.7\.30`/);
-  assert.match(marketplace, /"version": "1\.7\.30"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-25T04:55:41Z"/);
-  assert.match(changelog, /## 1\.7\.30 - 2026-10-25/);
+  assert.match(script, /\/\/ @version\s+1\.7\.31/);
+  assert.match(marketplace, /Version: `1\.7\.31`/);
+  assert.match(marketplace, /"version": "1\.7\.31"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-25T05:17:20Z"/);
+  assert.match(changelog, /## 1\.7\.31 - 2026-10-25/);
 });
 
 test('address display options preserve native editing and default layout', () => {
@@ -96,7 +96,9 @@ test('address display options preserve native editing and default layout', () =>
   assert.match(script, /const nativeText = chromeDoc\.getElementById\('urlbar-input'\)\?\.value/);
   assert.match(script, /splitAddressbars\.getAddressDisplay\(href, nativeText, domainOnly\)/);
   assert.match(script, /addressDisplay\.setAttribute\('aria-hidden', 'true'\)/);
-  assert.match(css, /#urlbar:not\(:is\(\[focused\], \[open\], \[breakout-extend="true"\], :focus-within\)\) #urlbar-input/);
+  assert.match(css, /#urlbar:not\(:is\(\[focused\], \[open\], \[breakout-extend="true"\], :focus-within\)\) :is\(#urlbar-input, #urlbar-scheme\)/);
+  assert.match(css, /opacity: 0 !important/);
+  assert.match(css, /flex: 0 0 var\(--blended-addressbar-idle-width\) !important/);
   assert.match(css, /@media \(-moz-pref\("uc\.blended-addressbar\.domain-only"\)\)/);
   assert.match(script, /addressDisplayInitObserver\.observe\(chromeDoc\.documentElement, \{ childList: true, subtree: true \}\)/);
   assert.match(css, /#nav-bar\s*\{\s*--zen-toolbar-height: 36px/);

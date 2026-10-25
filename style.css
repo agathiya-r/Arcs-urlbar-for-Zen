@@ -6,8 +6,15 @@
     position: relative;
 }
 
-:root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) #urlbar-input {
-    color: transparent !important;
+:root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) :is(#urlbar-input, #urlbar-scheme) {
+    opacity: 0 !important;
+}
+
+/* Keep Zen's wide editor on focus, but make its idle hit area fit the shown address. */
+:root[data-blended-address-display]:not([zen-single-toolbar="true"]) #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) {
+    flex: 0 0 var(--blended-addressbar-idle-width) !important;
+    width: var(--blended-addressbar-idle-width) !important;
+    left: var(--blended-addressbar-idle-offset);
 }
 
 .blended-addressbar-display-text {
@@ -17,6 +24,7 @@
 :root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) .blended-addressbar-display-text:not([hidden]) {
     display: block;
     position: absolute;
+    z-index: 10;
     inset-block-start: 50%;
     inset-inline-start: 0;
     max-width: 100%;

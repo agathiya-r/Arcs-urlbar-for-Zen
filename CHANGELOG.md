@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.31 - 2026-10-25
+
+- Fully hide Zen's native URL text while the domain label is shown, including text that remained visible behind the label.
+- Size the idle top addressbar to its displayed text and keep the Copy URL button beside it. Focusing the addressbar restores Zen's full-width editor. Toolbar height settings are unchanged.
+
 ## 1.7.30 - 2026-10-25
 
 - Start the domain-only and centered address display before other browser-chrome setup, and reconnect it when Zen rebuilds the URL input. The toolbar height settings are unchanged.

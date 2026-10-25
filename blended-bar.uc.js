@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.30
+// @version        1.7.31
 // ==/UserScript==
 
 (() => {
@@ -3308,6 +3308,25 @@
     root.toggleAttribute('data-blended-address-display', (domainOnly || centered) && !!label);
     if (addressDisplay.textContent !== label) addressDisplay.textContent = label;
     addressDisplay.hidden = !label;
+
+    const urlbar = chromeDoc.getElementById('urlbar');
+    const compactTopBar = !!label && chromeDoc.documentElement.getAttribute('zen-single-toolbar') !== 'true';
+    const container = chromeDoc.getElementById('urlbar-container');
+    if (compactTopBar && container && urlbar) {
+      const available = Math.max(0, container.getBoundingClientRect().width - 8);
+      const width = Math.min(available, Math.max(124, Math.ceil(addressDisplay.scrollWidth) + 96));
+      if (width >= 96) {
+        setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-width', `${width}px`);
+        if (centered) {
+          const currentOffset = parseFloat(urlbar.style.getPropertyValue('--blended-addressbar-idle-offset')) || 0;
+          const compactBox = addressDisplay.parentElement.getBoundingClientRect();
+          const baseCenter = compactBox.left + compactBox.width / 2 - currentOffset;
+          setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-offset', `${window.innerWidth / 2 - baseCenter}px`);
+        } else {
+          removeStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-offset');
+        }
+      }
+    }
 
     const box = addressDisplay.parentElement?.getBoundingClientRect();
     if (centered && box?.width) {
