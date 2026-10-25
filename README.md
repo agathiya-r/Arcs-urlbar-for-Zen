@@ -1,4 +1,4 @@
-# Blended Addressbar
+# Arc's URLBar for Zen
 
 An Arc-inspired addressbar layout for Zen Browser, built on [Kostiantyn Kugot's original Blended Addressbar](https://github.com/kkugot/blended-addressbar). The original mod supplies the page-aware colors, browser frame, split-view controls, bookmarks behavior, and loading indicators. This fork adds optional ways to display the address in Zen's top toolbar.
 
