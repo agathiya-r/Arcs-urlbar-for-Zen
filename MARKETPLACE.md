@@ -3,7 +3,7 @@
 ## Ready
 
 - Name: `Blended Addressbar` (18 characters).
-- Version: `1.7.35`.
+- Version: `1.7.36`.
 - Description: `A page-aware addressbar that blends Zen chrome with the active website.` (71 characters).
 - Metadata: `theme.json`.
 - Preferences: `preferences.json`.
@@ -30,9 +30,9 @@
   "readme": "https://raw.githubusercontent.com/igeag/blended-addressbar/main/README.md",
   "image": "https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png",
   "author": "Kostiantyn Kugot",
-  "version": "1.7.35",
+  "version": "1.7.36",
   "ai": "partial",
-  "updatedAt": "2026-10-31T04:26:45Z",
+  "updatedAt": "2026-10-31T04:32:18Z",
   "style": {
     "chrome": "style.css",
     "content": ""
