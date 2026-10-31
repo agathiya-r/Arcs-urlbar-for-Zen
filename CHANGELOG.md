@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.34 - 2026-10-31
+
+- Keep the address label centered in the browser window when the sidebar collapses, expands, or changes width. Refresh positioning as toolbar geometry changes and after sidebar animations finish.
+
 ## 1.7.33 - 2026-10-25
 
 - Place Zen's native zoom reset button just beyond the compact top addressbar, beside the site-data menu, so a zoom percentage does not overlap the displayed domain.

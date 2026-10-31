@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.33
+// @version        1.7.34
 // ==/UserScript==
 
 (() => {
@@ -3268,6 +3268,10 @@
   let addressDisplayObserver = null;
   let addressDisplayInitObserver = null;
   let observedAddressbar = null;
+  let addressDisplayResizeObserver = null;
+  let addressDisplayLayoutObserver = null;
+  let addressDisplayContainer = null;
+  let addressDisplayFrame = 0;
   let zoomButtonRecord = null;
   let zoomButtonObserver = null;
   let zoomButtonResizeObserver = null;
@@ -3354,6 +3358,15 @@
       });
       observedAddressbar = urlbar;
     }
+    const container = chromeDoc.getElementById('urlbar-container');
+    if (container !== addressDisplayContainer) {
+      addressDisplayResizeObserver?.disconnect();
+      addressDisplayResizeObserver = new ResizeObserver(scheduleAddressDisplay);
+      for (const element of [container, chromeDoc.getElementById('nav-bar'), chromeDoc.getElementById('navigator-toolbox')]) {
+        if (element) addressDisplayResizeObserver.observe(element);
+      }
+      addressDisplayContainer = container;
+    }
     return true;
   }
 
@@ -3407,7 +3420,18 @@
   }
 
   function scheduleAddressDisplay() {
-    requestAnimationFrame(refreshAddressDisplay);
+    if (addressbarEnhancementsDisposed || addressDisplayFrame) return;
+    addressDisplayFrame = requestAnimationFrame(() => {
+      addressDisplayFrame = 0;
+      refreshAddressDisplay();
+    });
+  }
+
+  function onAddressDisplayTransitionEnd(event) {
+    // Sidebar animations can translate the toolbar without resizing the window.
+    if (event.target?.closest?.('#navigator-toolbox, #zen-appcontent-navbar-container, #zen-main-app-wrapper')) {
+      scheduleAddressDisplay();
+    }
   }
 
   function initAddressDisplay() {
@@ -3418,6 +3442,12 @@
       if (box && addressDisplay?.parentElement !== box) scheduleAddressDisplay();
     });
     addressDisplayInitObserver.observe(chromeDoc.documentElement, { childList: true, subtree: true });
+    addressDisplayLayoutObserver = new MutationObserver(scheduleAddressDisplay);
+    addressDisplayLayoutObserver.observe(chromeDoc.documentElement, {
+      attributes: true, subtree: true,
+      attributeFilter: ['zen-sidebar-expanded', 'tabs-hidden', 'zen-compact-mode', 'zen-single-toolbar', 'zen-right-side', 'sidebar-positionend', 'customizing']
+    });
+    chromeDoc.addEventListener('transitionend', onAddressDisplayTransitionEnd, true);
     refreshAddressDisplay();
   }
 
@@ -3639,6 +3669,12 @@
     splitEditorResizeObserver?.disconnect();
     addressDisplayObserver?.disconnect();
     addressDisplayInitObserver?.disconnect();
+    addressDisplayResizeObserver?.disconnect();
+    addressDisplayLayoutObserver?.disconnect();
+    chromeDoc.removeEventListener('transitionend', onAddressDisplayTransitionEnd, true);
+    if (addressDisplayFrame) cancelAnimationFrame(addressDisplayFrame);
+    addressDisplayFrame = 0;
+    addressDisplayContainer = null;
     zoomButtonObserver?.disconnect();
     zoomButtonResizeObserver?.disconnect();
     if (zoomButtonFrame) cancelAnimationFrame(zoomButtonFrame);

@@ -64,20 +64,101 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.33', () => {
+test('release metadata stays synchronized at version 1.7.34', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.33');
-  assert.equal(theme.updatedAt, '2026-10-25T18:01:53Z');
+  assert.equal(theme.version, '1.7.34');
+  assert.equal(theme.updatedAt, '2026-10-31T04:22:13Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.33/);
-  assert.match(marketplace, /Version: `1\.7\.33`/);
-  assert.match(marketplace, /"version": "1\.7\.33"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-25T18:01:53Z"/);
-  assert.match(changelog, /## 1\.7\.33 - 2026-10-25/);
+  assert.match(script, /\/\/ @version\s+1\.7\.34/);
+  assert.match(marketplace, /Version: `1\.7\.34`/);
+  assert.match(marketplace, /"version": "1\.7\.34"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-31T04:22:13Z"/);
+  assert.match(changelog, /## 1\.7\.34 - 2026-10-31/);
+});
+
+test('address centering follows sidebar geometry without a window resize', () => {
+  const source = read('blended-bar.uc.js');
+  const frames = [];
+  const resizeObservers = [];
+  const mutationObservers = [];
+  const listeners = new Map();
+  const style = () => new Map();
+  const rootAttributes = new Set();
+  const rootElement = {
+    getAttribute: () => 'false',
+    toggleAttribute: (name, enabled) => enabled ? rootAttributes.add(name) : rootAttributes.delete(name),
+    removeAttribute: name => rootAttributes.delete(name)
+  };
+  let baseCenter = 720;
+  const urlbar = { style: style(), querySelector: () => box };
+  const box = {
+    appendChild(label) { label.parentElement = this; },
+    getBoundingClientRect() {
+      const offset = parseFloat(urlbar.style.get('--blended-addressbar-idle-offset')) || 0;
+      return { left: baseCenter + offset - 50, width: 100 };
+    }
+  };
+  const container = { getBoundingClientRect: () => ({ width: 800 }) };
+  const nodes = { urlbar, 'urlbar-container': container, 'nav-bar': {}, 'navigator-toolbox': {} };
+  const context = {
+    chromeDoc: {
+      documentElement: rootElement,
+      getElementById: id => nodes[id],
+      createElementNS: () => ({ setAttribute() {}, style: style(), scrollWidth: 80 }),
+      addEventListener: (name, callback) => listeners.set(name, callback)
+    },
+    window: { innerWidth: 1200, getComputedStyle: () => ({ left: urlbar.style.get('--blended-addressbar-idle-offset') || '0px' }) },
+    gBrowser: { selectedBrowser: { currentURI: { spec: 'https://example.com/path' } } },
+    splitAddressbars: { getAddressDisplay: () => 'example.com' },
+    readBoolPref: () => true,
+    domainOnlyPref: 'domain', centerTextPref: 'center',
+    setStylePropertyIfChanged: (target, name, value) => target.set(name, value),
+    removeStylePropertyIfChanged: (target, name) => target.delete(name),
+    scheduleZoomButton() {},
+    requestAnimationFrame: callback => frames.push(callback),
+    MutationObserver: class {
+      constructor(callback) { this.callback = callback; mutationObservers.push(this); }
+      observe() {} disconnect() {}
+    },
+    ResizeObserver: class {
+      constructor(callback) { this.callback = callback; this.targets = []; resizeObservers.push(this); }
+      observe(target) { this.targets.push(target); } disconnect() {}
+    }
+  };
+  const start = source.indexOf('  function ensureAddressDisplay()');
+  const end = source.indexOf('  function captureSplitAddressAppearance()', start);
+  vm.createContext(context);
+  vm.runInContext(`
+    let addressbarEnhancementsDisposed = false;
+    let addressDisplay, addressDisplayObserver, addressDisplayInitObserver, observedAddressbar;
+    let addressDisplayResizeObserver, addressDisplayLayoutObserver, addressDisplayContainer;
+    let addressDisplayFrame = 0;
+    ${source.slice(start, end)}
+    initAddressDisplay();
+  `, context);
+  const centered = () => {
+    const label = vm.runInContext('addressDisplay', context);
+    assert.equal(box.getBoundingClientRect().left + parseFloat(label.style.get('left')), 600);
+  };
+  centered();
+  const geometryObserver = resizeObservers.find(observer => observer.targets.includes(container));
+  assert.ok(geometryObserver, 'toolbar geometry must be observed independently of window resize');
+  for (const center of [690, 650, 600, 640, 720]) {
+    baseCenter = center;
+    geometryObserver.callback();
+    geometryObserver.callback();
+    assert.equal(frames.length, 1, 'layout notifications coalesce into one frame');
+    frames.shift()();
+    centered();
+  }
+  baseCenter = 610;
+  listeners.get('transitionend')({ target: { closest: () => true } });
+  frames.shift()();
+  centered();
 });
 
 test('address display options preserve native editing and default layout', () => {
