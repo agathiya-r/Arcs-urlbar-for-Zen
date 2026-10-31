@@ -40,6 +40,8 @@ The toolbar changes were made to bring Zen's top bar closer to Arc's compact app
 
 Supported Zen layouts: **Only Sidebar**, **Sidebar and Top Toolbar**, and **Collapsed Sidebar**. The new address display and toolbar-height options apply to Zen's top toolbar; Only Sidebar keeps its native sidebar addressbar while the original frame, window tint, split view, compact mode, and loading bar remain supported. Visual validation is still recommended after Zen updates because browser chrome selectors can change.
 
+During webpage fullscreen (such as a fullscreen YouTube video), the toolbar, compact addressbar, and zoom reset button are hidden. They return when fullscreen ends. This does not hide the toolbar in ordinary macOS window fullscreen.
+
 ## Split addresses
 
 In dual-toolbar layouts, each split pane shows a field styled like the native addressbar, with copy URL, site settings/extensions and reload/stop controls. Click the address, or focus it with Tab and press Enter, to select that pane and open Zen’s real editor over the field. Cmd/Ctrl+L opens that same editor over the selected pane. Suggestions, paste, selection and navigation remain native. Hover to see the full URL. Reload/stop controls its own pane without changing the selected tab.

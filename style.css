@@ -1,6 +1,12 @@
 @import "styles/loadbar.css";
 @import "styles/header-chrome.css";
 
+/* Zen makes #urlbar visible even when its ancestors are collapsed in DOM
+   fullscreen. Hide the moved toolbar and native URL controls explicitly. */
+:root[inDOMFullscreen="true"] :is(#zen-appcontent-navbar-wrapper, #urlbar, #urlbar-zoom-button) {
+    display: none !important;
+}
+
 /* The native input retains the full URL and resumes normal editing on focus. */
 :root[data-blended-address-display] #urlbar:not(:is([focused], [open], [breakout-extend="true"], :focus-within)) .urlbar-input-box {
     position: relative;

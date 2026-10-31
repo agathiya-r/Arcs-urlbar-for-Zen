@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.35', () => {
+test('release metadata stays synchronized at version 1.7.37', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.35');
-  assert.equal(theme.updatedAt, '2026-10-31T04:26:45Z');
+  assert.equal(theme.version, '1.7.37');
+  assert.equal(theme.updatedAt, '2026-10-31T04:46:09Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.35/);
-  assert.match(marketplace, /Version: `1\.7\.35`/);
-  assert.match(marketplace, /"version": "1\.7\.35"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-31T04:26:45Z"/);
-  assert.match(changelog, /## 1\.7\.35 - 2026-10-31/);
+  assert.match(script, /\/\/ @version\s+1\.7\.37/);
+  assert.match(marketplace, /Version: `1\.7\.37`/);
+  assert.match(marketplace, /"version": "1\.7\.37"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-31T04:46:09Z"/);
+  assert.match(changelog, /## 1\.7\.37 - 2026-10-31/);
 });
 
 test('address centering follows sidebar geometry without a window resize', () => {
@@ -586,7 +586,7 @@ test('single-toolbar mode frames page content while leaving the sidebar addressb
   assert.match(css, /@media \(-moz-bool-pref:\s*"uc\.blended-addressbar\.single-toolbar\.bookmarks-always-visible"\)[\s\S]*#zen-appcontent-navbar-wrapper:has\(#PersonalToolbar:not\(\[hidden\]\):not\(\[collapsed\]\)\)\s*\+ #zen-tabbox-wrapper\s*\{[^}]*padding-top:\s*var\(--blended-addressbar-bookmarks-height\)\s*!important/s);
   assert.match(singleCss, /&:is\(\[inDOMFullscreen="true"\],\s*\[inFullscreen="true"\],\s*\[macOSNativeFullscreen\],\s*\[zen-no-padding="true"\]\)[\s\S]*#zen-appcontent-navbar-wrapper\s*\{[^}]*min-height:\s*0\s*!important[^}]*height:\s*0\s*!important[\s\S]*#zen-tabbox-wrapper\s*\{[^}]*margin:\s*0\s*!important[^}]*border-radius:\s*var\(--blended-addressbar-frame-radius\)\s*!important[^}]*box-shadow:\s*none\s*!important/s);
   assert.doesNotMatch(singleCss, /#urlbar/);
-  assert.match(readme, /Only Sidebar keeps Zen's native sidebar addressbar/);
+  assert.match(readme, /Only Sidebar keeps (?:Zen's|its) native sidebar addressbar/);
   assert.match(readme, /uc\.blended-addressbar\.single-toolbar\.bookmarks-always-visible/);
 });
 

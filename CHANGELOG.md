@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.37 - 2026-10-31
+
+- Hide the top toolbar, compact URL bar, and native zoom button during webpage fullscreen, such as YouTube video fullscreen. Restore them automatically on exit.
+- Keep the addressbar centering from 1.7.35 and Zen’s native sidebar animation.
+
 ## 1.7.35 - 2026-10-31
 
 - Correct the compact addressbar position before each resized frame is painted, avoiding a frame of lag during sidebar collapse and expansion.
