@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.38 - 2026-10-31
+
+- Restore the 220ms eased sidebar closing animation from 1.7.36, including reduced-motion support and native cleanup.
+- Retain the webpage-fullscreen addressbar fix from 1.7.37.
+
 ## 1.7.37 - 2026-10-31
 
 - Hide the top toolbar, compact URL bar, and native zoom button during webpage fullscreen, such as YouTube video fullscreen. Restore them automatically on exit.
