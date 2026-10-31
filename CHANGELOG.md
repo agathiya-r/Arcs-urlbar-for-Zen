@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.35 - 2026-10-31
+
+- Correct the compact addressbar position before each resized frame is painted, avoiding a frame of lag during sidebar collapse and expansion.
+- Use one geometry measurement per positioning update and keep the label centered within the compact field. Skip compact measurements while Zen’s floating editor is open.
+
 ## 1.7.34 - 2026-10-31
 
 - Keep the address label centered in the browser window when the sidebar collapses, expands, or changes width. Refresh positioning as toolbar geometry changes and after sidebar animations finish.

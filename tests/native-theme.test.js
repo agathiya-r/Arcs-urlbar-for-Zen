@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.34', () => {
+test('release metadata stays synchronized at version 1.7.35', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.34');
-  assert.equal(theme.updatedAt, '2026-10-31T04:22:13Z');
+  assert.equal(theme.version, '1.7.35');
+  assert.equal(theme.updatedAt, '2026-10-31T04:26:45Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.34/);
-  assert.match(marketplace, /Version: `1\.7\.34`/);
-  assert.match(marketplace, /"version": "1\.7\.34"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-31T04:22:13Z"/);
-  assert.match(changelog, /## 1\.7\.34 - 2026-10-31/);
+  assert.match(script, /\/\/ @version\s+1\.7\.35/);
+  assert.match(marketplace, /Version: `1\.7\.35`/);
+  assert.match(marketplace, /"version": "1\.7\.35"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-31T04:26:45Z"/);
+  assert.match(changelog, /## 1\.7\.35 - 2026-10-31/);
 });
 
 test('address centering follows sidebar geometry without a window resize', () => {
@@ -94,10 +94,13 @@ test('address centering follows sidebar geometry without a window resize', () =>
     removeAttribute: name => rootAttributes.delete(name)
   };
   let baseCenter = 720;
-  const urlbar = { style: style(), querySelector: () => box };
+  let editing = false;
+  let geometryReads = 0;
+  const urlbar = { style: style(), querySelector: () => box, matches: () => editing };
   const box = {
     appendChild(label) { label.parentElement = this; },
     getBoundingClientRect() {
+      geometryReads++;
       const offset = parseFloat(urlbar.style.get('--blended-addressbar-idle-offset')) || 0;
       return { left: baseCenter + offset - 50, width: 100 };
     }
@@ -149,12 +152,20 @@ test('address centering follows sidebar geometry without a window resize', () =>
   assert.ok(geometryObserver, 'toolbar geometry must be observed independently of window resize');
   for (const center of [690, 650, 600, 640, 720]) {
     baseCenter = center;
+    geometryReads = 0;
     geometryObserver.callback();
-    geometryObserver.callback();
-    assert.equal(frames.length, 1, 'layout notifications coalesce into one frame');
-    frames.shift()();
+    assert.equal(frames.length, 0, 'correct animation geometry before paint, without waiting for another frame');
+    assert.equal(geometryReads, 1, 'measure once without a layout read after moving the field');
     centered();
   }
+  editing = true;
+  const idleOffset = urlbar.style.get('--blended-addressbar-idle-offset');
+  baseCenter = 400;
+  geometryObserver.callback();
+  assert.equal(urlbar.style.get('--blended-addressbar-idle-offset'), idleOffset, 'floating editor geometry must not change the compact offset');
+  editing = false;
+  geometryObserver.callback();
+  centered();
   baseCenter = 610;
   listeners.get('transitionend')({ target: { closest: () => true } });
   frames.shift()();

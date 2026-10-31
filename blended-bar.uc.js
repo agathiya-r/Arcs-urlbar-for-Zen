@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.34
+// @version        1.7.35
 // ==/UserScript==
 
 (() => {
@@ -3361,8 +3361,10 @@
     const container = chromeDoc.getElementById('urlbar-container');
     if (container !== addressDisplayContainer) {
       addressDisplayResizeObserver?.disconnect();
-      addressDisplayResizeObserver = new ResizeObserver(scheduleAddressDisplay);
-      for (const element of [container, chromeDoc.getElementById('nav-bar'), chromeDoc.getElementById('navigator-toolbox')]) {
+      // ResizeObserver runs after layout and before paint. Do not defer this
+      // correction to another frame or the label trails the sidebar animation.
+      addressDisplayResizeObserver = new ResizeObserver(positionAddressDisplay);
+      for (const element of [container, box, chromeDoc.getElementById('nav-bar'), chromeDoc.getElementById('navigator-toolbox')]) {
         if (element) addressDisplayResizeObserver.observe(element);
       }
       addressDisplayContainer = container;
@@ -3398,20 +3400,35 @@
       const width = Math.min(available, Math.max(124, Math.ceil(addressDisplay.scrollWidth) + 96));
       if (width >= 96) {
         setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-width', `${width}px`);
-        if (centered) {
-          const currentOffset = parseFloat(window.getComputedStyle(urlbar).left) || 0;
-          const compactBox = addressDisplay.parentElement.getBoundingClientRect();
-          const baseCenter = compactBox.left + compactBox.width / 2 - currentOffset;
-          setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-offset', `${window.innerWidth / 2 - baseCenter}px`);
-        } else {
+        if (!centered) {
           removeStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-offset');
         }
       }
     }
 
-    const box = addressDisplay.parentElement?.getBoundingClientRect();
+    positionAddressDisplay();
+  }
+
+  function positionAddressDisplay() {
+    if (addressbarEnhancementsDisposed || !addressDisplay?.parentElement) return;
+    const urlbar = chromeDoc.getElementById('urlbar');
+    // The floating editor uses Zen's own geometry. Measure the compact field
+    // again once it closes rather than feeding its expanded bounds back in.
+    if (!urlbar || urlbar.matches(':is([focused], [open], [breakout-extend="true"], :focus-within)')) return;
+    const centered = readBoolPref(centerTextPref, false);
+    const box = addressDisplay.parentElement.getBoundingClientRect();
+    const compactTopBar = chromeDoc.documentElement.getAttribute('zen-single-toolbar') !== 'true';
     if (centered && box?.width) {
-      const center = Math.max(8, Math.min(box.width - 8, window.innerWidth / 2 - box.left));
+      // Read the current layout once, then write both positions. The label
+      // stays centered within its field while the field compensates for the
+      // sidebar. Re-reading the moved box here forces a second layout pass.
+      const currentOffset = compactTopBar ? parseFloat(window.getComputedStyle(urlbar).left) || 0 : 0;
+      const baseCenter = box.left + box.width / 2 - currentOffset;
+      const center = compactTopBar ? box.width / 2
+        : Math.max(8, Math.min(box.width - 8, window.innerWidth / 2 - box.left));
+      if (compactTopBar) {
+        setStylePropertyIfChanged(urlbar.style, '--blended-addressbar-idle-offset', `${window.innerWidth / 2 - baseCenter}px`);
+      }
       setStylePropertyIfChanged(addressDisplay.style, 'left', `${center}px`);
     } else {
       removeStylePropertyIfChanged(addressDisplay.style, 'left');
