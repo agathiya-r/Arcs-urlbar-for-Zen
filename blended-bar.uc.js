@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Blended Addressbar
 // @description    Adaptive header color for Zen URL bar
-// @version        1.7.36
+// @version        1.7.35
 // ==/UserScript==
 
 (() => {
@@ -3718,52 +3718,6 @@
     addressbarEnhancementsDisposed = true;
   }
 
-  let sidebarMotion = null;
-  let nativeSidebarAnimate = null;
-  let smoothSidebarAnimate = null;
-  const sidebarClosingAnimations = new Set();
-
-  function initSmoothSidebarClosing() {
-    try {
-      sidebarMotion = window.gZenUIManager?.motion;
-      if (typeof sidebarMotion?.animate !== 'function') return;
-      nativeSidebarAnimate = sidebarMotion.animate;
-      smoothSidebarAnimate = function(target, keyframes, options) {
-        // Match only Zen's compact-mode closing call. Other Motion users,
-        // sidebar opening and hover behavior keep their native animation.
-        const closing = target === chromeDoc.getElementById('navigator-toolbox')
-          && target?.getAttribute('animate') === 'true'
-          && chromeDoc.documentElement.hasAttribute('zen-compact-animating')
-          && keyframes && Object.keys(keyframes).every(name => ['marginLeft', 'marginRight'].includes(name))
-          && Object.values(keyframes).some(values => Array.isArray(values)
-            && values.length === 2 && Number.parseFloat(values[0]) === 0 && Number.parseFloat(values[1]) < 0);
-        if (!closing || typeof target.animate !== 'function') {
-          return nativeSidebarAnimate.apply(this, arguments);
-        }
-        try {
-          const animation = target.animate(keyframes, {
-            duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220,
-            easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
-          });
-          sidebarClosingAnimations.add(animation);
-          // Resolve cancellation too, so Zen always completes its own cleanup.
-          return animation.finished.catch(() => {}).finally(() => sidebarClosingAnimations.delete(animation));
-        } catch {
-          return nativeSidebarAnimate.apply(this, arguments);
-        }
-      };
-      sidebarMotion.animate = smoothSidebarAnimate;
-    } catch {
-      // A future Zen release may expose an immutable Motion API.
-    }
-  }
-
-  function cleanupSmoothSidebarClosing() {
-    if (sidebarMotion?.animate === smoothSidebarAnimate) sidebarMotion.animate = nativeSidebarAnimate;
-    for (const animation of sidebarClosingAnimations) animation.cancel();
-    sidebarClosingAnimations.clear();
-  }
-
   function initWhenReady() {
     if (typeof gBrowser === 'undefined' || !gBrowser) {
       setTimeout(initWhenReady, 500);
@@ -3771,7 +3725,6 @@
     }
 
     initAddressDisplay();
-    initSmoothSidebarClosing();
     applyFramePrefs();
     observeFramePrefs();
     applyLoadbarPrefs();
@@ -3933,7 +3886,6 @@
     };
     try { gBrowser.addTabsProgressListener(pl); } catch {}
     const cleanup = () => {
-      cleanupSmoothSidebarClosing();
       cleanupAddressbarEnhancements();
       try { getPrefs()?.removeObserver(addressbarPrefBranch, displayPrefObserver); } catch {}
       try { gBrowser.removeTabsProgressListener(pl); } catch {}

@@ -64,20 +64,20 @@ function countOccurrences(value, needle) {
   return value.split(needle).length - 1;
 }
 
-test('release metadata stays synchronized at version 1.7.36', () => {
+test('release metadata stays synchronized at version 1.7.35', () => {
   const theme = JSON.parse(read('theme.json'));
   const script = read('blended-bar.uc.js');
   const marketplace = read('MARKETPLACE.md');
   const changelog = read('CHANGELOG.md');
 
-  assert.equal(theme.version, '1.7.36');
-  assert.equal(theme.updatedAt, '2026-10-31T04:32:18Z');
+  assert.equal(theme.version, '1.7.35');
+  assert.equal(theme.updatedAt, '2026-10-31T04:26:45Z');
   assert.equal(theme.image, 'https://raw.githubusercontent.com/igeag/blended-addressbar/main/marketplace-preview.png');
-  assert.match(script, /\/\/ @version\s+1\.7\.36/);
-  assert.match(marketplace, /Version: `1\.7\.36`/);
-  assert.match(marketplace, /"version": "1\.7\.36"/);
-  assert.match(marketplace, /"updatedAt": "2026-10-31T04:32:18Z"/);
-  assert.match(changelog, /## 1\.7\.36 - 2026-10-31/);
+  assert.match(script, /\/\/ @version\s+1\.7\.35/);
+  assert.match(marketplace, /Version: `1\.7\.35`/);
+  assert.match(marketplace, /"version": "1\.7\.35"/);
+  assert.match(marketplace, /"updatedAt": "2026-10-31T04:26:45Z"/);
+  assert.match(changelog, /## 1\.7\.35 - 2026-10-31/);
 });
 
 test('address centering follows sidebar geometry without a window resize', () => {
@@ -170,57 +170,6 @@ test('address centering follows sidebar geometry without a window resize', () =>
   listeners.get('transitionend')({ target: { closest: () => true } });
   frames.shift()();
   centered();
-});
-
-test('sidebar closing uses an eased browser animation and preserves native cleanup', async () => {
-  const script = read('blended-bar.uc.js');
-  const nativeCalls = [];
-  const nativeResult = {};
-  const motion = { animate(...args) { nativeCalls.push(args); return nativeResult; } };
-  const animations = [];
-  let reducedMotion = false;
-  const toolbox = {
-    getAttribute: () => 'true',
-    animate(keyframes, options) {
-      let finish, cancel;
-      const finished = new Promise((resolve, reject) => { finish = resolve; cancel = reject; });
-      const animation = { finished, finish, cancel() { cancel(new Error('cancelled')); } };
-      animations.push({ keyframes, options, animation });
-      return animation;
-    }
-  };
-  const context = {
-    window: { gZenUIManager: { motion }, matchMedia: () => ({ matches: reducedMotion }) },
-    chromeDoc: { getElementById: () => toolbox, documentElement: { hasAttribute: () => true } }
-  };
-  vm.createContext(context);
-  vm.runInContext(script.slice(script.indexOf('  let sidebarMotion = null;'), script.indexOf('  function initWhenReady()')), context);
-  const nativeAnimate = motion.animate;
-  context.initSmoothSidebarClosing();
-  for (const side of ['marginLeft', 'marginRight']) {
-    const keyframes = { marginLeft: [0, 0], marginRight: [0, 0], [side]: [0, '-240px'] };
-    const result = motion.animate(toolbox, keyframes, { type: 'spring', duration: 0.1 });
-    const record = animations.at(-1);
-    assert.equal(record.keyframes, keyframes, 'preserve Zen layout endpoints');
-    assert.equal(record.options.duration, 220);
-    assert.equal(record.options.easing, 'cubic-bezier(0.22, 1, 0.36, 1)');
-    let cleaned = false;
-    result.then(() => { cleaned = true; });
-    assert.equal(cleaned, false, 'Zen cleanup must wait for animation completion');
-    record.animation.finish();
-    await result;
-    assert.equal(cleaned, true);
-  }
-  const opening = { marginLeft: ['-240px', 0] };
-  assert.equal(motion.animate(toolbox, opening), nativeResult);
-  assert.equal(motion.animate({}, { opacity: [0, 1] }), nativeResult);
-  assert.equal(nativeCalls.length, 2, 'unrelated animations pass through');
-  reducedMotion = true;
-  const pending = motion.animate(toolbox, { marginRight: [0, '-240px'] });
-  assert.equal(animations.at(-1).options.duration, 0);
-  context.cleanupSmoothSidebarClosing();
-  await pending;
-  assert.equal(motion.animate, nativeAnimate, 'unloading restores the native animation');
 });
 
 test('address display options preserve native editing and default layout', () => {

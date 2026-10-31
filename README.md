@@ -16,8 +16,6 @@ An Arc-inspired addressbar layout for Zen Browser, built on [Kostiantyn Kugot's 
 | Content-sized address field | When either address-display option is on, the idle clickable field fits its label and keeps Copy URL close. The native editor returns when you focus the addressbar. | Automatic with either option |
 | Zoom reset button | When the compact top addressbar is active and page zoom differs from 100%, Zen's native zoom percentage sits just beyond the field beside the site-data menu. Click it to reset zoom. | Automatic with either address-display option |
 
-The sidebar also closes into Compact Mode with a 220ms eased animation. This follows the system's reduced-motion setting and preserves Zen's native opening and hover behavior.
-
 The toolbar changes were made to bring Zen's top bar closer to Arc's compact appearance. The domain-only and centered options can be enabled separately in Sine. Zen's floating search bar keeps its native behavior.
 
 ## Features from the original mod

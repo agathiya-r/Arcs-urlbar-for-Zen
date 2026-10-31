@@ -1,10 +1,5 @@
 # Changelog
 
-## 1.7.36 - 2026-10-31
-
-- Smooth the sidebar’s compact-mode closing animation with a 220ms eased browser animation, replacing Zen’s short spring for that action. Preserve the native animation endpoints and completion cleanup, including right-side sidebars.
-- Respect reduced motion and restore Zen’s animation handler when the mod unloads. The addressbar positioning from 1.7.35 is unchanged.
-
 ## 1.7.35 - 2026-10-31
 
 - Correct the compact addressbar position before each resized frame is painted, avoiding a frame of lag during sidebar collapse and expansion.
